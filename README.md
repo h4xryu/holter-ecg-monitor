@@ -2,7 +2,7 @@
 
 A comprehensive web-based dashboard for real-time ECG (Electrocardiogram) monitoring with AI-powered analysis capabilities.
 
-![Dashboard Preview](/placeholder.svg?height=300&width=600)
+![Dashboard Preview](https://ifh.cc/g/12xanP.jpg?height=300&width=600)
 
 ## Overview
 
