@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/cb8a9971-497f-45b2-b571-53fa25c12cb1)# ECG Monitoring Dashboard
+# ECG Monitoring Dashboard
 
 A comprehensive web-based dashboard for real-time ECG (Electrocardiogram) monitoring with AI-powered analysis capabilities.
 
