@@ -4,6 +4,8 @@ A comprehensive web-based dashboard for real-time ECG (Electrocardiogram) monito
 
 ![Dashboard Preview](https://ifh.cc/g/L6hCKG.jpg?height=300&width=600)
 
+![](https://ifh.cc/g/LNydLp.pngg?height=300&width=600)
+
 ## Overview
 
 This ECG Monitoring Dashboard is designed for healthcare professionals to monitor, analyze, and manage electrocardiogram data in real-time. The system features AI-powered anomaly detection to identify potential cardiac irregularities such as Ventricular Premature Contractions (VPC) and Atrial Premature Contractions (APC).
