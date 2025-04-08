@@ -58,6 +58,9 @@ export function FullECGGridView() {
   const totalRows = Math.ceil(totalSeconds / secondsPerRow)
   const rowHeight = 120 // Fixed height for each row
 
+  // 데이터베이스 유형 선택을 위한 상태 변수 추가:
+  const [databaseType, setDatabaseType] = useState<"mit-bih" | "incart">("mit-bih")
+
   // Set canvas dimensions and draw ECG when data or container size changes
   useEffect(() => {
     if (!ecgData?.rawData || !canvasRef.current || !containerWidth) return
@@ -103,21 +106,23 @@ export function FullECGGridView() {
     }
 
     // Extract 360 samples around the R-peak (MIT-BIH standard)
-    const segmentLength = 360
-    const halfSegment = Math.floor(segmentLength / 2)
+    // const segmentLength = 360
+    // const halfSegment = Math.floor(segmentLength / 2)
 
-    // Calculate segment boundaries
-    const start = Math.max(0, selectedPeak - halfSegment)
-    const end = Math.min(ecgData.rawData.length - 1, start + segmentLength)
+    // // Calculate segment boundaries
+    // const start = Math.max(0, selectedPeak - halfSegment)
+    // const end = Math.min(ecgData.rawData.length - 1, start + segmentLength)
 
-    // Create segment
-    const segment = new Float32Array(segmentLength)
+    // // Create segment
+    // const segment = new Float32Array(segmentLength)
 
-    // Fill segment with data or zero-pad if needed
-    for (let i = 0; i < segmentLength; i++) {
-      const dataIndex = start + i
-      segment[i] = dataIndex < ecgData.rawData.length ? ecgData.rawData[dataIndex] : 0
-    }
+    // // Fill segment with data or zero-pad if needed
+    // for (let i = 0; i < segmentLength; i++) {
+    //   const dataIndex = start + i
+    //   segment[i] = dataIndex < ecgData.rawData.length ? ecgData.rawData[dataIndex] : 0
+    // }
+
+    const segment = extractSegmentAroundPeak(selectedPeak)
 
     setExtractedSegment(segment)
 
@@ -569,6 +574,35 @@ export function FullECGGridView() {
 
   const hasRawData = ecgData?.rawData && ecgData.rawData.length > 0
 
+  // Extract segment around an R-peak based on database type
+  const extractSegmentAroundPeak = (peakIndex: number): Float32Array | null => {
+    if (!ecgData?.rawData) return null
+
+    // Determine segment length based on database type
+    const halfSegmentLength = databaseType === "mit-bih" ? 180 : 150
+    const segmentLength = halfSegmentLength * 2
+
+    // Skip first and last R-peaks
+    if (peakIndex === ecgData.rPeaks[0] || peakIndex === ecgData.rPeaks[ecgData.rPeaks.length - 1]) {
+      return null
+    }
+
+    // Calculate segment boundaries
+    const start = Math.max(0, peakIndex - halfSegmentLength)
+    const end = Math.min(ecgData.rawData.length - 1, peakIndex + halfSegmentLength)
+
+    // Create segment
+    const segment = new Float32Array(segmentLength)
+
+    // Fill segment with data or zero-pad if needed
+    for (let i = 0; i < segmentLength; i++) {
+      const dataIndex = start + i
+      segment[i] = dataIndex < ecgData.rawData.length ? ecgData.rawData[dataIndex] : 0
+    }
+
+    return segment
+  }
+
   // Update the return statement to show loading state
   // Replace the existing if (!hasRawData) block with this:
   if (!hasRawData) {
@@ -670,6 +704,21 @@ export function FullECGGridView() {
               </Button>
               <span className="text-sm font-medium">{scaleFactor.toFixed(1)}x</span>
             </div>
+          </div>
+
+          <div className="flex items-center space-x-4">
+            <Label htmlFor="database-type" className="min-w-[120px]">
+              Database Type:
+            </Label>
+            <Select value={databaseType} onValueChange={(value) => setDatabaseType(value as "mit-bih" | "incart")}>
+              <SelectTrigger id="database-type" className="w-[200px]">
+                <SelectValue placeholder="Select database type" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mit-bih">MIT-BIH (360 samples)</SelectItem>
+                <SelectItem value="incart">INCART (300 samples)</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           <div ref={containerRef} className="border rounded-lg overflow-auto" style={{ height: "500px" }}>
@@ -925,22 +974,28 @@ export function FullECGGridView() {
                     // Clear existing events
                     setArrhythmiaEvents([])
 
-                    // Process each R-peak
-                    for (const peakIndex of ecgData.rPeaks.slice(0, 10)) {
-                      // Limit to first 10 for demo
-                      // Extract segment
-                      const segmentLength = 360
-                      const halfSegment = Math.floor(segmentLength / 2)
-                      const start = Math.max(0, peakIndex - halfSegment)
-                      const segment = new Float32Array(segmentLength)
+                    // Filter out first and last R-peaks
+                    const peaksToProcess = ecgData.rPeaks.filter(
+                      (_, idx) => idx !== 0 && idx !== ecgData.rPeaks.length - 1,
+                    )
 
-                      for (let i = 0; i < segmentLength; i++) {
-                        const dataIndex = start + i
-                        segment[i] = dataIndex < ecgData.rawData.length ? ecgData.rawData[dataIndex] : 0
-                      }
+                    // Process each R-peak one by one with delay
+                    for (const peakIndex of peaksToProcess) {
+                      // Extract segment based on database type
+                      const segment = extractSegmentAroundPeak(peakIndex)
 
-                      // Simulate classification
-                      await new Promise((resolve) => setTimeout(resolve, 100))
+                      if (!segment) continue
+
+                      // Show current peak being processed
+                      setSelectedPeak(peakIndex)
+
+                      // Scroll to the row containing this peak
+                      const peakRowIndex = Math.floor(peakIndex / (secondsPerRow * samplingRate))
+                      setCurrentRow(peakRowIndex)
+                      scrollToRow(peakRowIndex)
+
+                      // Simulate classification with delay to show progress
+                      await new Promise((resolve) => setTimeout(resolve, 800))
 
                       // Generate random result
                       const classes: ArrhythmiaType[] = ["N", "S", "V", "F", "Q"]
@@ -980,7 +1035,9 @@ export function FullECGGridView() {
                   }
                 }}
               >
-                {isClassifying ? "Processing..." : "Batch Classify (Demo)"}
+                {isClassifying
+                  ? "Processing..."
+                  : `Batch Classify (${databaseType === "mit-bih" ? "360" : "300"} samples)`}
               </Button>
             </CardFooter>
           </Card>
