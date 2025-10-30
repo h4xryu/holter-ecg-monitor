@@ -5,7 +5,7 @@
 
 ECG Analysis Application is a comprehensive tool for analyzing electrocardiogram (ECG) data, detecting arrhythmias, and visualizing heart activity. This application provides real-time monitoring, file-based analysis, and machine learning-based classification of ECG segments.
 
-## ✨ Features
+##  Features
 
 - **ECG Data Visualization**: Real-time and static visualization of ECG signals
 - **R-Peak Detection**: Advanced algorithms for accurate R-peak detection
@@ -16,7 +16,7 @@ ECG Analysis Application is a comprehensive tool for analyzing electrocardiogram
 - **File Support**: Import ECG data from CSV, TXT, and NPY files
 - **Performance Optimization**: Memory-efficient data structures for large ECG datasets
 
-## 🖼️ Screenshots
+##  Screenshots
 
 ![Dashboard Preview](https://ifh.cc/g/kDv4MK.jpg?height=300&width=600)
 
@@ -52,7 +52,7 @@ npm install
 # Start the development server
 npm run dev
 ```
-## 📊 Usage
+##  Usage
 
 ### Loading ECG Data
 
@@ -99,7 +99,7 @@ npm run dev
 - **Model Management**: Handles model loading, selection, and inference
 
 
-## 🧪 Algorithms
+##  Algorithms
 
 ### R-Peak Detection
 
@@ -134,7 +134,7 @@ The application supports classification of ECG segments into five classes:
 - **Q**: Unknown beat
 
 
-## 📚 Technical Details
+##  Technical Details
 
 ### Data Structures
 
@@ -149,7 +149,7 @@ The application supports classification of ECG segments into five classes:
 - **Downsampling**: Automatic downsampling for very large files
 
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -160,11 +160,11 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 5. Open a Pull Request
 
 
-## 📄 License
+##  License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgements
+##  Acknowledgements
 
 - [Next.js](https://nextjs.org/) - The React framework used
 - [shadcn/ui](https://ui.shadcn.com/) - UI components
